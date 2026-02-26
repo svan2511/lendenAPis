@@ -7,7 +7,7 @@ RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-scripts -
 # Stage 2: Final image - PHP 8.3 FPM + Nginx + Supervisor
 FROM php:8.3-fpm-alpine
 
-# Install packages + GD deps (same as before)
+# Install packages + GD deps + netcat for entrypoint DB wait
 RUN apk update && apk add --no-cache \
     nginx \
     supervisor \
@@ -19,19 +19,19 @@ RUN apk update && apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \
     libpng-dev \
-    netcat-openbsd \  # <-- Added nc command for DB wait in entrypoint
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        zip \
-        pcntl \
-        bcmath \
-        gd \
-        exif \
-    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apk del .build-deps
+    netcat-openbsd && \
+  docker-php-ext-configure gd --with-freetype --with-jpeg && \
+  docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    zip \
+    pcntl \
+    bcmath \
+    gd \
+    exif && \
+  apk add --no-cache --virtual .build-deps $PHPIZE_DEPS && \
+  pecl install redis && \
+  docker-php-ext-enable redis && \
+  apk del .build-deps
 
 # Copy configs (same)
 COPY nginx.conf /etc/nginx/http.d/default.conf
@@ -60,6 +60,4 @@ RUN chmod +x /entrypoint.sh
 # Use entrypoint to run migrations/passport at startup, then start supervisor
 ENTRYPOINT ["/entrypoint.sh"]
 
-# No CMD needed anymore - entrypoint.sh will exec the supervisor
-# EXPOSE 80  (already there, but optional in Render)
 EXPOSE 80
