@@ -40,11 +40,11 @@ class AuthController extends Controller
 
             return ApiResponse::success('User created successfully!' , "user" ,$user);
         } catch (\Exception $e) {
-            Log::error('OTP send failed', [
+            Log::error('Failed to create user', [
                 'phone' => $request->phone,
                 'error' => $e->getMessage()
             ]);
-            return ApiResponse::error('Failed to send OTP. Please try again.', 500);
+            return ApiResponse::error('Failed to create user. Please try again.--'.$e->getMessage(), 500);
         }
     }
 
