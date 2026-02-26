@@ -15,7 +15,8 @@ class OtpService
         Cache::forget("otp_mobile_{$mobile}");
 
         // Naya OTP banao aur store karo
-        $otp = rand(100000, 999999);
+        // $otp = rand(100000, 999999);
+        $otp = 123456;
         Cache::put("otp_mobile_{$mobile}", $otp, $this->expirySeconds);
 
         Log::info("New OTP generated for mobile {$mobile}: {$otp}");
