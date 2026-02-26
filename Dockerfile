@@ -4,18 +4,10 @@ WORKDIR /app
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-scripts --no-interaction --ignore-platform-reqs
 
-# Migrations + Passport chalao (production mein --force use karo)
-RUN php artisan migrate --force && \
-    php artisan passport:install --force && \
-    php artisan optimize:clear && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
-
 # Stage 2: Final image - PHP 8.3 FPM + Nginx + Supervisor
 FROM php:8.3-fpm-alpine
 
-# Install packages + GD deps
+# Install packages + GD deps (same as before)
 RUN apk update && apk add --no-cache \
     nginx \
     supervisor \
@@ -40,7 +32,7 @@ RUN apk update && apk add --no-cache \
     && docker-php-ext-enable redis \
     && apk del .build-deps
 
-# Copy configs
+# Copy configs (same)
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -49,16 +41,20 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 COPY --from=composer /app/vendor /var/www/html/vendor
 
-# Permissions fix: Create missing directories first (bootstrap/cache & storage subdirs if needed), then chown & chmod
+# Permissions fix: Create missing directories first, then chown & chmod
 RUN mkdir -p /var/www/html/bootstrap/cache \
     && mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Laravel cache optimizations (now safe, directories exist)
+# Laravel cache optimizations (now safe after COPY and mkdir)
 RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
+
+# IMPORTANT: Migrations aur Passport ko yahan mat chalaao build time pe
+# Kyunki build time pe DB connection nahi hoga (Aiven DB external hai, env vars build mein available nahi hote by default)
+# Iske bajaye runtime pe chalao (niche bataaya hai)
 
 EXPOSE 80
 
