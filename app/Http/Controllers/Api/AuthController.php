@@ -105,7 +105,7 @@ class AuthController extends Controller
                 'phone' => $request->phone,
                 'error' => $e->getMessage()
             ]);
-        return ApiResponse::error('Failed to send OTP. Please try again.', 500);
+        return ApiResponse::error('Failed to send OTP. Please try again ---'.$e->getMessage(), 500);
         }
     }
 
