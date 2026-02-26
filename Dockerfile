@@ -19,6 +19,7 @@ RUN apk update && apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \
     libpng-dev \
+    netcat-openbsd \  # <-- Added nc command for DB wait in entrypoint
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
@@ -52,10 +53,13 @@ RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
-# IMPORTANT: Migrations aur Passport ko yahan mat chalaao build time pe
-# Kyunki build time pe DB connection nahi hoga (Aiven DB external hai, env vars build mein available nahi hote by default)
-# Iske bajaye runtime pe chalao (niche bataaya hai)
+# Copy entrypoint script and make it executable
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
+# Use entrypoint to run migrations/passport at startup, then start supervisor
+ENTRYPOINT ["/entrypoint.sh"]
+
+# No CMD needed anymore - entrypoint.sh will exec the supervisor
+# EXPOSE 80  (already there, but optional in Render)
 EXPOSE 80
-
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
