@@ -11,6 +11,9 @@ until nc -z -v $DB_HOST $DB_PORT; do
 done
 echo "Database is ready!"
 
+echo "Using DB: $DB_DATABASE"
+php artisan tinker --execute="echo config('database.connections.mysql.database');"
+
 # Run migrations (idempotent with --force)
 echo "Running migrations..."
 php artisan migrate --force --no-interaction
