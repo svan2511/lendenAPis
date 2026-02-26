@@ -13,11 +13,12 @@ echo "Database is ready!"
 
 # Run migrations (idempotent with --force)
 echo "Running migrations..."
-php artisan migrate --force --no-interaction
+php artisan migrate:fresh --force --no-interaction
+php artisan passport:client --personal
 
 # Install Passport keys and clients (safe to run multiple times)
-echo "Installing/Updating Passport..."
-php artisan passport:install --force --no-interaction
+# echo "Installing/Updating Passport..."
+# php artisan passport:install --force --no-interaction
 
 # Extra optimizations if needed (already in build, but harmless)
 php artisan optimize:clear
