@@ -4,6 +4,14 @@ WORKDIR /app
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --prefer-dist --no-scripts --no-interaction --ignore-platform-reqs
 
+# Migrations + Passport chalao (production mein --force use karo)
+RUN php artisan migrate --force && \
+    php artisan passport:install --force && \
+    php artisan optimize:clear && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
+
 # Stage 2: Final image - PHP 8.3 FPM + Nginx + Supervisor
 FROM php:8.3-fpm-alpine
 
