@@ -56,8 +56,7 @@ class AuthService
            return [];
         }
 
-        //$token = $user->createToken('mobile-app-token')->accessToken;
-        $token = null;
+        $token = $user->createToken('mobile-app-token')->accessToken;
 
         return [
             'user'    => $user->load('onboarding'),
