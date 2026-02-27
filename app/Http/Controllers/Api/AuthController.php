@@ -78,7 +78,7 @@ class AuthController extends Controller
                 'trace' => $e->getTraceAsString(), // optional - more debug info
             ]);
 
-            return ApiResponse::error('Failed to verify OTP. Please try again.--'.$e->getMessage(), 500);
+            return ApiResponse::error('Failed to verify OTP. Please try again.', 500);
         }
     }
 
