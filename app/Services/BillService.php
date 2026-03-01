@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Repositories\BillRepository;
 use App\Repositories\OnboardingRepository;
 use App\Repositories\ProductRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -27,12 +28,13 @@ class BillService
         return DB::transaction(function () use ($billData, $items) {
 
             $bill = Bill::create($billData);
+            $user = Auth::user();
 
             foreach ($items as $itemData) {
                 $product = Product::findOrFail($itemData['productId']);
 
                 // Critical: check & decrease stock inside transaction
-                if($product->type === "product") {
+                if($product->type === "product" && $user->onboarding->has_stock) {
                     $product->decreaseStock($itemData['quantity']);
                 }
                 
