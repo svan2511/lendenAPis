@@ -33,6 +33,7 @@ return new class extends Migration
             $table->enum('unit_type', ['weight', 'fixed'])->default('fixed');
 
             $table->timestamps();
+            $table->softDeletes();
             // Common indexes
             $table->index('user_id');
             $table->index('type');

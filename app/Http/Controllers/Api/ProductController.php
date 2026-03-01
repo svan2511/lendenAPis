@@ -33,7 +33,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name'      => ['required', 'string', 'min:2', 'max:120'],
             'price'     => ['required', 'numeric', 'min:0.01', 'max:9999999'],
-            'quantity'  => ['required', 'integer', 'min:0'],
+            'quantity'  => ['nullable', 'integer', 'min:0'],
             'type'      => ['required', Rule::in(['product', 'service'])],
             'unit_type' => ['required', Rule::in(['weight', 'fixed'])],
         ]);

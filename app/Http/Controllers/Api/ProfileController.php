@@ -73,6 +73,7 @@ class ProfileController extends Controller
                 'name' => $request->shopName,
                 'address' => $request->shopAddress ?? null,
             ]);
+            $profile->phone = $user->phone;
             return ApiResponse::success(
                 message: 'Profile added successfully',
                 key: 'profile',
@@ -117,6 +118,8 @@ class ProfileController extends Controller
                 'name' => $request->shopName,
                 'address' => $request->shopAddress ?? null,
             ]);
+
+             $shop->phone = $user->phone;
 
               return ApiResponse::success(
                 message: 'Profile updated successfully',

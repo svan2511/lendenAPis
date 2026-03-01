@@ -23,7 +23,7 @@ class ProductRepository
 
     public function index(): Collection
     {
-        return Product::where('user_id',Auth::user()->id)->get();
+        return Product::where('user_id',Auth::user()->id) ->whereNull('deleted_at')->get();
          
     }
 

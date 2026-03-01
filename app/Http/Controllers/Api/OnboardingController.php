@@ -40,8 +40,8 @@ class OnboardingController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'business_type'     => ['required', Rule::in(['product', 'service', 'both', 'freelance'])],
-            'has_stock'         => ['required', 'boolean'],
-            'has_appointments'  => ['required', 'boolean'],
+            'has_stock'         => ['nullable', 'boolean'],
+            'has_appointments'  => ['nullable', 'boolean'],
             'has_staff'         => ['nullable', 'boolean'],
         ]);
 

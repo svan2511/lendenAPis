@@ -44,6 +44,7 @@ class BillRepository
 
         // 1. Total Sales = sum of all bills.total_amount in the month
         $totalSales = DB::table('bills')
+            ->where('user_id' ,Auth::user()->id)
             ->whereBetween('billed_at', [$start, $end])
             ->sum('total_amount');
 
@@ -51,6 +52,7 @@ class BillRepository
         // → Change 'expense_date' to your actual column name if different
         //   (from your frontend code it seems to be expense_date)
         $totalExpenses = DB::table('expenses')
+            ->where('user_id' ,Auth::user()->id)
             ->whereBetween('expense_date', [$start, $end])
             ->sum('amount');
 
