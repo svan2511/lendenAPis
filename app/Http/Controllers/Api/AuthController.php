@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\VerifyOtpRequest;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,20 +23,13 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|digits:10',
-            'name' => 'required|string'
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
-
+        
         try {
 
             $user = $this->authService->register(["phone" => $request->phone ,"name" => $request->name]);
+
             if(!$user) {
                 return ApiResponse::error('User Already Exist !.', 200);
             }
@@ -48,17 +44,8 @@ class AuthController extends Controller
         }
     }
 
-   public function verifyOtp(Request $request)
+   public function verifyOtp(VerifyOtpRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|digits:10',
-            'otp'   => 'required|string|digits:6'
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
-
         try {
             $result = $this->authService->verifyAndAuthenticate(
                 $request->phone,
@@ -82,16 +69,8 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|digits:10'
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
-
         try {
             
             $user = $this->authService->login($request->phone);

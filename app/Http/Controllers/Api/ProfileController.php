@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProfileRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
@@ -45,7 +47,7 @@ class ProfileController extends Controller
     }
 
     // Add a new profile (POST /api/profile)
-    public function store(Request $request)
+    public function store(StoreProfileRequest $request)
     {
         $user = Auth::user();
 
@@ -58,16 +60,6 @@ class ProfileController extends Controller
 
         try {
           
-             $validator = Validator::make($request->all(),[
-                'shopName' => 'required|string|max:255',
-                'shopAddress' => 'nullable|string|max:500',
-            ]);
-
-            if ($validator->fails()) {
-                return ApiResponse::validationError($validator->errors()->first());
-            }
-
-        
              $profile = $this->service->createProfile([
                'user_id'   => $user->id,
                 'name' => $request->shopName,
@@ -90,7 +82,7 @@ class ProfileController extends Controller
     }
 
     // Update the profile (PUT /api/profile)
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
 
         try {
@@ -102,16 +94,6 @@ class ProfileController extends Controller
                 ApiResponse::error('Profile not found. Create one first.', 404);
                 }
 
-              $validator = Validator::make($request->all(),[
-                'shopName' => 'required|string|max:255',
-                'shopAddress' => 'nullable|string|max:500',
-            ]);
-
-            if ($validator->fails()) {
-                return ApiResponse::validationError($validator->errors()->first());
-            }
-
-            
 
             $shop->update([
                 'user_id'   => $user->id,

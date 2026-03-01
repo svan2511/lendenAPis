@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreOnboardingRequest;
 use App\Models\OnboardingResponse;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -29,29 +30,12 @@ class OnboardingController extends Controller
 
 
 
-    public function store(Request $request )
+    public function store(StoreOnboardingRequest $request )
     {
         $user = $request->user();
 
-        if (!$user) {
-            return ApiResponse::unauthorized('Please login to continue');
-        }
-
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'business_type'     => ['required', Rule::in(['product', 'service', 'both', 'freelance'])],
-            'has_stock'         => ['nullable', 'boolean'],
-            'has_appointments'  => ['nullable', 'boolean'],
-            'has_staff'         => ['nullable', 'boolean'],
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
-
         try {
-            // Update or create onboarding record (prevents duplicates)
-        
+          
              $response = $this->userservice->createOnboarding([
                     'business_type'     => $request->business_type,
                     'has_stock'         => $request->has_stock,

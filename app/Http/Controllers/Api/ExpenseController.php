@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreExpenseRequest;
 use App\Models\Expense;
 use App\Repositories\ExpenseRepository;
 use Illuminate\Http\Request;
@@ -43,24 +44,13 @@ class ExpenseController extends Controller
        
     }
 
-    public function store(Request $request)
+    public function store(StoreExpenseRequest $request)
     {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:150',
-            'amount'        => 'required|numeric|min:0.01',
-            'expense_date'  => 'required|date',
-            'category'      => [
-                'nullable',
-                Rule::in(['rent', 'electricity', 'purchase_stock', 'salary', 'transport', 'marketing', 'maintenance', 'other'])
-            ],
-            'payment_mode'  => 'nullable|string|max:50',
-            'description'   => 'nullable|string',
-        ]);
-
+       
         try{
             $expense = $this->expenseRepo->create([
             'user_id' => Auth::id(),
-            ...$validated,
+            ...$request->validated(),
         ]);
 
         return ApiResponse::success(

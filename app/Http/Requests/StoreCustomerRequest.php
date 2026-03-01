@@ -3,13 +3,16 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+use App\Helpers\ApiResponse; // ← adjust namespace if ApiResponse is elsewhere
 
 class StoreCustomerRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // ← add auth/gates later if needed
+        return true; // or add logic e.g. auth()->check()
     }
 
     public function rules(): array
@@ -19,22 +22,40 @@ class StoreCustomerRequest extends FormRequest
             'phone' => [
                 'required',
                 'string',
-                'size:10',           // exactly 10 characters
-                'regex:/^[0-9]{10}$/', // only digits
+                'size:10',
+                'regex:/^[0-9]{10}$/',
                 Rule::unique('customers', 'phone'),
             ],
-            'email' => ['nullable', 'email:rfc,dns', 'max:100'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'phone.size'       => 'Phone number must be exactly 10 digits.',
-            'phone.regex'      => 'Phone number must contain only digits.',
-            'phone.unique'     => 'This phone number is already registered.',
-            'name.required'    => 'Customer name is required.',
-            'email.email'      => 'Please enter a valid email address.',
+            'name.required' => 'Customer name is required.',
+            'name.string'   => 'Name must be a valid string.',
+            'name.min'      => 'Name must be at least 2 characters.',
+            'name.max'      => 'Name may not be greater than 100 characters.',
+
+            'phone.required' => 'Mobile number is required.',
+            'phone.string'   => 'Mobile number must be a valid string.',
+            'phone.size'     => 'Mobile number must be exactly 10 digits.',
+            'phone.regex'    => 'Mobile number must contain exactly 10 digits (0-9 only).',
+
+            // Custom message for unique rule
+            'phone.unique'   => 'This phone number is already registered.',
         ];
+    }
+
+    /**
+     * Return only the FIRST error message in your custom ApiResponse format
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        $firstError = $validator->errors()->first();
+
+        throw new HttpResponseException(
+            ApiResponse::validationError($firstError)
+        );
     }
 }

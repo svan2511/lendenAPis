@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
@@ -26,21 +27,9 @@ class ProductController extends Controller
         $this->service = $service;
     }
 
-   public function store(Request $request)
+   public function store(StoreProductRequest $request)
     {
         $user = Auth::user();
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'name'      => ['required', 'string', 'min:2', 'max:120'],
-            'price'     => ['required', 'numeric', 'min:0.01', 'max:9999999'],
-            'quantity'  => ['nullable', 'integer', 'min:0'],
-            'type'      => ['required', Rule::in(['product', 'service'])],
-            'unit_type' => ['required', Rule::in(['weight', 'fixed'])],
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
 
         try {
             // Create the product (you can move this to a ProductService if you prefer)
@@ -91,7 +80,7 @@ class ProductController extends Controller
     }
 
 
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
         $user = Auth::user();
 
@@ -101,19 +90,6 @@ class ProductController extends Controller
                 message: 'You do not have permission to update this product.',
                 status: 403
             );
-        }
-
-        // Validation - use 'sometimes' to allow partial updates
-        $validator = Validator::make($request->all(), [
-            'name'      => ['sometimes', 'required', 'string', 'min:2', 'max:120'],
-            'price'     => ['sometimes', 'required', 'numeric', 'min:0.01', 'max:9999999'],
-            'quantity'  => ['sometimes', 'required', 'integer', 'min:0'],
-            'type'      => ['sometimes', 'required', Rule::in(['product', 'service'])],
-            'unit_type' => ['sometimes', 'required', Rule::in(['weight', 'fixed'])],
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
         }
 
         try {

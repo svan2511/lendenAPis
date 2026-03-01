@@ -32,7 +32,7 @@ class BillService
                 $product = Product::findOrFail($itemData['productId']);
 
                 // Critical: check & decrease stock inside transaction
-                if($product->business_type === "product") {
+                if($product->type === "product") {
                     $product->decreaseStock($itemData['quantity']);
                 }
                 

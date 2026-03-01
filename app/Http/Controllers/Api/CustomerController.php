@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCustomerRequest;
 use App\Models\Customer;
 use App\Services\CustomerService;
 use Illuminate\Http\Request;
@@ -22,32 +23,16 @@ class CustomerController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        // Validation
         $user = Auth::user();
-        $validator = Validator::make($request->all(), [
-            'name'  => ['required', 'string', 'min:2', 'max:100'],
-            'phone' => [
-                'required',
-                'string',
-                'size:10',
-                'regex:/^[0-9]{10}$/',
-                Rule::unique('customers', 'phone'),
-            ],
-            'email' => ['nullable', 'email:rfc,dns', 'max:100'],
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
-
+    
         try {
            
             $customer = $this->service->createCustomer([
                 'name'   => $request->name,
                 'phone'  => $request->phone,
-                'email'  => $request->email ?? null,
+                'address'  => $request->address ?? null,
                 'user_id' => $user->id,   
             ]);
 

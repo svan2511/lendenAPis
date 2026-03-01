@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBillRequest;
 use App\Models\Bill;
 use App\Models\BillItem;
 use App\Models\Product;
@@ -27,26 +28,9 @@ class BillController extends Controller
          $this->billItemService = $billItemService;
     }
 
-    public function store(Request $request)
+    public function store(StoreBillRequest $request)
     {
         $user = Auth::user();
-
-        $validator = Validator::make($request->all(), [
-            'customerId'    => 'required|exists:customers,id',
-            'totalAmount'   => 'required|numeric|min:0',
-            'status'        => 'required|in:FULL,PARTIAL',
-            'paidAmount'    => 'required_if:status,PARTIAL|numeric|min:0',
-            'items'         => 'required|array|min:1',
-            'items.*.productId'   => 'required|exists:products,id',
-            'items.*.quantity'    => 'required|numeric|min:0.01',
-            'items.*.price'       => 'required|numeric|min:0',
-            'items.*.total'       => 'required|numeric|min:0',
-            // optional: 'items.*.unit_type' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validationError($validator->errors()->first());
-        }
 
         try {
             $billData = [
