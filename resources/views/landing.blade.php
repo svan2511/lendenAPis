@@ -319,7 +319,8 @@ function confirmDownload() {
   }).then((result) => {
     if (result.isConfirmed) {
       // Example download link
-      window.location.href = "{{ asset('storage/apks/lenden-app-latest.apk') }}"
+      window.location.href = "{{ asset('apks/lenden.apk') }}";
+      //https://lendenapis-owzq.onrender.com/apks/lenden-app-latest.apk
     }
   });
 }
