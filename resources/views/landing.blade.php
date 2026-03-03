@@ -231,7 +231,7 @@ billing, products, customers and payments — all from one simple app.
   <li>Fast, secure & made for India 🇮🇳</li>
 </ul>
 
-<a href="#" class="btn" onclick="confirmDownload()">Download the App</a>
+<a href="#" class="btn" onclick="confirmDownload()">Download the App for test</a>
 </div>
 
 <!-- RIGHT PHONE -->
