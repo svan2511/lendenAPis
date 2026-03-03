@@ -231,7 +231,7 @@ billing, products, customers and payments — all from one simple app.
   <li>Fast, secure & made for India 🇮🇳</li>
 </ul>
 
-<a href="#" class="btn" onclick="confirmDownload()">Download the App for test</a>
+<a href="#" class="btn" onclick="confirmDownload()">Download the App</a>
 </div>
 
 <!-- RIGHT PHONE -->
@@ -319,8 +319,7 @@ function confirmDownload() {
   }).then((result) => {
     if (result.isConfirmed) {
       // Example download link
-      window.location.href = "{{ asset('apks/lenden.apk') }}";
-      //https://lendenapis-owzq.onrender.com/apks/lenden-app-latest.apk
+      window.location.href = "https://expo.dev/artifacts/eas/8oLh8ZfcChpSpVSnDPcWoW.apk";
     }
   });
 }
