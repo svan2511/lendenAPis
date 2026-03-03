@@ -319,7 +319,7 @@ function confirmDownload() {
   }).then((result) => {
     if (result.isConfirmed) {
       // Example download link
-      //window.location.href = "https://expo.dev/artifacts/eas/YOUR_APK_LINK.apk";
+      window.location.href = "{{ asset('storage/apks/lenden-app-latest.apk') }}"
     }
   });
 }
